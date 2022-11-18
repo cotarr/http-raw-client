@@ -4,8 +4,7 @@ For debugging, send one raw HTTP request.
 
 During testing, this tool was written to send raw HTTP requests 
 without character escaping or other encoding.
-
-This is a short one page program to send one raw HTTP request.
+The program will send one raw HTTP request.
 The response is console.log() to stdout.
 
 This is HTTP only and does not support SSL/TLS HTTPS requests.
