@@ -41,6 +41,16 @@ if (options.tls) {
   options.  minVersion = 'TLSv1.2';
 }
 
+// Optional: Case of self signed client certificate required by API
+/*
+if (options.tls) {
+  options.key = fs.readFileSync('key.pem');
+  options.cert = fs.readFileSync('cert.pem');
+  options.ca = [ fs.readFileSync('ca.pem') ];
+  options.checkServerIdentity = () => { return null; }; 
+}
+*/
+
 let appendPortToHost = '';
 if ((options.port !== 80) && (options.port !== 443))
 appendPortToHost = ':' + options.port.toString();
