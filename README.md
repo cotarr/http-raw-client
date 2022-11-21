@@ -2,11 +2,14 @@
 
 For debugging, send one raw http request.
 
-To support web server testing, this tool was written to 
-send one raw http request without character escaping or other encoding.
-The http response is sent to stdout.
+- This is a simple ad-hoc tool that may be useful for web server testing.
+- It operates similar to using a telnet client to test a web server.
+- This tool was written to send one raw http request without character escaping or other encoding.
+- The http response is sent to stdout.
+- Both http and https (TLS) are supported.
+- It it a JavaScript program intended to run in NodeJs using command line terminal.
+- There are no dependencies and no npm modules are required.
 
-This supports both HTTP and HTTPS using TLS
 
 ### Install
 
