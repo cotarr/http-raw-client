@@ -11,13 +11,13 @@ For debugging, send one raw http request.
 - There are no dependencies and no npm modules are required.
 
 
-### Install
+## Install
 
 ```bash
 git clone git@github.com:cotarr/http-raw-client.git
 ```
 
-### Configure
+## Configure
 
 This is a simple ad-hoc test program. The intent is to modify app.js 
 for each test, and re-run the http client (`node app.js`) to view each new test.
@@ -47,7 +47,7 @@ const outputText = [
 ];
 ```
 
-### To run
+## To run
 
 To run, type: `node app.js`
 
@@ -89,3 +89,34 @@ Keep-Alive: timeout=5
 user1@laptop:~/dev/http-raw-client$ node app.js
 ```
 
+## Credentials from environment variables
+
+Credentials such as a cookies and access tokens that 
+may be available as environment variables, 
+can be used within the http request using the 
+process.env API available in nodejs.
+This would avoid hard coded credentials.
+
+Reference cookie from env variables
+
+```
+const outputText = [
+  'GET / HTTP/1.1',
+  'Host: ' + options.host + appendPortToHost,
+  'User-Agent: custom-user-agent-for-testing',
+  'Cookie: www.example.com=' + process.env.COOKIE,
+  ''
+];
+```
+
+Reference access token from env variables
+
+```
+const outputText = [
+  'GET / HTTP/1.1',
+  'Host: ' + options.host + appendPortToHost,
+  'User-Agent: custom-user-agent-for-testing',
+  'Authorization: Bearer ' + process.env.TOKEN,
+  ''
+];
+```
