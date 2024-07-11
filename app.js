@@ -17,7 +17,7 @@ const tls = require('tls');
 const process = require('process');
 
 // Variables
-const sendIntervalMs = 100;
+const sendIntervalMs = 10;
 let messageIndex = 0;
 let socketConnected = false;
 let socketError = false;
@@ -28,17 +28,17 @@ let socketError = false;
 //
 // Address, port, tls=true/false
 // --------------------------------
-let options = {
-  port: 8000,
+const options = {
+  port: 3003,
   host: 'localhost',
   tls: false,
   verifyTlsHost: true
-}
+};
 
 if (options.tls) {
   options.servername = options.host;
   options.rejectUnauthorized = options.verifyTlsHost;
-  options.  minVersion = 'TLSv1.2';
+  options.minVersion = 'TLSv1.2';
 }
 
 // Optional: Case of self signed client certificate required by API
@@ -47,13 +47,14 @@ if (options.tls) {
   options.key = fs.readFileSync('key.pem');
   options.cert = fs.readFileSync('cert.pem');
   options.ca = [ fs.readFileSync('ca.pem') ];
-  options.checkServerIdentity = () => { return null; }; 
+  options.checkServerIdentity = () => { return null; };
 }
 */
 
 let appendPortToHost = '';
-if ((options.port !== 80) && (options.port !== 443))
-appendPortToHost = ':' + options.port.toString();
+if ((options.port !== 80) && (options.port !== 443)) {
+  appendPortToHost = ':' + options.port.toString();
+}
 
 // ----------------------------------------------
 //
@@ -64,11 +65,17 @@ appendPortToHost = ':' + options.port.toString();
 // Note empty string at the end.
 // ----------------------------------------------
 const outputText = [
-  'GET / HTTP/1.1',
+  'GET /status HTTP/1.1',
   'Host: ' + options.host + appendPortToHost,
-  'User-Agent: custom-user-agent-for-testing',
-  ''
+  'User-Agent: custom-user-agent-for-testing'
 ];
+// Authorization headers from environment variables
+if (process.env.COOKIE) {
+  outputText.push('Cookie: ' + process.env.COOKIE);
+}
+if (process.env.TOKEN) {
+  outputText.push('Authorization: Bearer ' + process.env.TOKEN);
+}
 
 let socket = null;
 
@@ -77,7 +84,7 @@ if (options.tls) {
     console.log('tls.Connect callback');
   });
 } else {
-  socket = net.connect(options, () => { 
+  socket = net.connect(options, () => {
     console.log('Connect callback');
   });
 }
@@ -90,16 +97,17 @@ function timerHandler () {
     if (messageIndex < outputText.length) {
       console.log('Write: ', outputText[messageIndex]);
       socket.write(outputText[messageIndex] + '\r\n');
-    }
-    messageIndex++;
-    // After sending last message wait 2 seconds for responses, then exit
-    if (messageIndex > outputText.length) {
-      setTimeout(function() {
+    } else if (messageIndex === outputText.length) {
+      console.log('Close HTTP request by sending final EOL: \\r\\n\n');
+      socket.write('\r\n');
+      // After sending last message wait 2 seconds for responses, then exit
+      setTimeout(function () {
         console.log('\n');
         socket.destroy();
         process.exit(0);
       }, 2000);
     }
+    messageIndex++;
   }
 }
 setInterval(timerHandler, sendIntervalMs);
@@ -107,7 +115,9 @@ setInterval(timerHandler, sendIntervalMs);
 socket.on('secureConnect', () => {
   console.log('Event: secureConnect');
   console.log('socket.authorized ', socket.authorized);
-  console.log('socket.authorizationError ', socket.authorizationError);
+  if (socket.authorizationError) {
+    console.log('socket.authorizationError ', socket.authorizationError);
+  }
   if (options.tls) socketConnected = true;
 });
 
@@ -134,7 +144,7 @@ socket.on('data', (data) => {
 socket.on('timeout', () => {
   console.log('Event: socket.timeout');
   socketError = true;
-})
+});
 
 socket.on('end', () => {
   console.log('Event: socket.end');

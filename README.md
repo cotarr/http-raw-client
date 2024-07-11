@@ -15,7 +15,10 @@ For debugging, send one raw http request.
 
 ```bash
 git clone git@github.com:cotarr/http-raw-client.git
+cd http-raw-client
 ```
+
+Do not run `npm install`. There are no NPM dependencies. The repository does not include a package.json file.
 
 ## Configure
 
@@ -36,14 +39,14 @@ let options = {
 2) In the `app.js`, setup an array of stings containing the http request.
 The end of line '\r\n' will be appended automatically.
 Additional headers may be added as necessary for cookies or tokens.
-The final line is an empty string to complete the http request.
+The request will be completed automatically by automatically
+appending an empty line to the request.
 
 ```js
 const outputText = [
   'GET / HTTP/1.1',
   'Host: ' + options.host + appendPortToHost,
   'User-Agent: custom-user-agent-for-testing',
-  ''
 ];
 ```
 
@@ -64,7 +67,8 @@ socket.authorizationError  null
 Write:  GET / HTTP/1.1
 Write:  Host: www.example.com
 Write:  User-Agent: custom-user-agent-for-testing
-Write:  
+Close HTTP request by sending final EOL: \r\n)
+
 Event: data
 
 HTTP/1.1 200 OK
@@ -92,12 +96,28 @@ user1@laptop:~/dev/http-raw-client$ node app.js
 ## Credentials from environment variables
 
 Credentials such as a cookies and access tokens that 
-may be available as environment variables, 
-can be used within the http request using the 
+may be available as environment variables. 
+These can be used within the http request using the 
 process.env API available in nodejs.
 This would avoid hard coded credentials.
 
-Reference cookie from env variables
+Authorization headers will be created automatically when
+unix environment variables COOKIE or TOKEN are found.
+These can be crated from the CLI
+
+```bash
+export COOKIE=xxxxxxxxxx
+
+export TOKEN=yyyyyyyyyy
+```
+This will automatically add the following headers:
+
+```
+Cookie: xxxxxxxxxx
+Authorization: Bearer yyyyyyyyyy
+```
+
+Alternately, these can be added manually in the outputText Array.
 
 ```
 const outputText = [
@@ -105,7 +125,6 @@ const outputText = [
   'Host: ' + options.host + appendPortToHost,
   'User-Agent: custom-user-agent-for-testing',
   'Cookie: www.example.com=' + process.env.COOKIE,
-  ''
 ];
 ```
 
@@ -117,6 +136,5 @@ const outputText = [
   'Host: ' + options.host + appendPortToHost,
   'User-Agent: custom-user-agent-for-testing',
   'Authorization: Bearer ' + process.env.TOKEN,
-  ''
 ];
 ```
