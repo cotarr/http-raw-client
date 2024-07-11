@@ -93,6 +93,17 @@ Keep-Alive: timeout=5
 user1@laptop:~/dev/http-raw-client$ node app.js
 ```
 
+## View response in hexadecimal
+
+To view the response in hexadecimal format, locate the variable
+appendHexadecimal and change the value to true.
+
+```js
+// Optional
+// Show entire response in hexadecimal
+const appendHexadecimal = true;
+```
+
 ## Credentials from environment variables
 
 Credentials such as a cookies and access tokens that 

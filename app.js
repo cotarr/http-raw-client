@@ -139,6 +139,21 @@ socket.on('data', (data) => {
   // Not console.log()
   // No end of line '\n' to handle content split between more than one chunk
   process.stdout.write(data.toString('utf-8'));
+
+  // Optional
+  // Show entire response in hexadecimal
+  const appendHexadecimal = false;
+
+  if (appendHexadecimal) {
+    const uint8String = new TextEncoder('utf8').encode(data);
+    let dataHexStr = '';
+    for (let i = 0; i < data.length; i++) {
+      dataHexStr += uint8String[i].toString(16).padStart(2, '0') + ' ';
+    }
+    console.log('\n--------------------');
+    console.log(dataHexStr);
+    console.log('--------------------');
+  }
 });
 
 socket.on('timeout', () => {
