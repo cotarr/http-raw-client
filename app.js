@@ -29,7 +29,7 @@ let socketError = false;
 // Address, port, tls=true/false
 // --------------------------------
 const options = {
-  port: 3003,
+  port: 8000,
   host: 'localhost',
   tls: false,
   verifyTlsHost: true
@@ -65,7 +65,7 @@ if ((options.port !== 80) && (options.port !== 443)) {
 // Note empty string at the end.
 // ----------------------------------------------
 const outputText = [
-  'GET /status HTTP/1.1',
+  'GET / HTTP/1.1',
   'Host: ' + options.host + appendPortToHost,
   'User-Agent: custom-user-agent-for-testing'
 ];
